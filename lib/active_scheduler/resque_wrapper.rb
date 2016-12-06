@@ -12,7 +12,13 @@ module ActiveScheduler
           args = job_data['arguments']
         end
 
-        named_args ? klass.perform_later(**args) : klass.perform_later(*args)
+        if job_data['perform_now'] == true 
+          method = klass.method :perform_now
+        else
+          method = klass.method :perform_later
+        end
+
+        named_args ? method.call(**args) : method.call(*args)
       else
         klass.perform_later
       end
